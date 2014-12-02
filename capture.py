@@ -38,8 +38,13 @@ class mainFrame(gui.mainFrame):
  
     def catureFullScreen(self, event):
         os.system(catureCmd1)
-        self.Show(False)
-        pinFrame(None).Show(True)
+
+        if os.path.exists('token.saved'):
+            print "檔案存在！"
+
+        else:
+            self.Show(False)
+            pinFrame(None).Show(True)
 
     def caturePart(self, event):
     	os.system(catureCmd2)
@@ -61,8 +66,7 @@ class pinFrame(gui.pinFrame):
         credentials = client.authorize(pin, 'pin')
         client.set_user_auth(credentials['access_token'], credentials['refresh_token'])
 
-        #Save token to file
-
+#Save token to file
         saveToken = file('token.saved', 'w')
         token = {"access_token":credentials['access_token'],"refresh_token":credentials['refresh_token']}
 
