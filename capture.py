@@ -40,7 +40,11 @@ class mainFrame(gui.mainFrame):
         os.system(catureCmd1)
 
         if os.path.exists('token.saved'):
-            print "檔案存在！"
+            self.Show(False)
+            openToken = open("token.saved","r")
+            token = json.loads(file.read(openToken))
+            client.set_user_auth(token['access_token'], token['refresh_token'])
+            uploadImage()
 
         else:
             self.Show(False)
@@ -48,8 +52,17 @@ class mainFrame(gui.mainFrame):
 
     def caturePart(self, event):
     	os.system(catureCmd2)
-        self.Show(False)
-        pinFrame(None).Show(True)
+
+        if os.path.exists('token.saved'):
+            self.Show(False)
+            openToken = open("token.saved","r")
+            token = json.loads(file.read(openToken))
+            client.set_user_auth(token['access_token'], token['refresh_token'])
+            uploadImage()
+
+        else:
+            self.Show(False)
+            pinFrame(None).Show(True)
 
 #If user do not have a access token for imgur, ask pin and get token
 class pinFrame(gui.pinFrame):
