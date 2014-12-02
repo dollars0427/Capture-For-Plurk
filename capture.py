@@ -14,7 +14,10 @@ import json
 
 #Import imgurpython to upload the image
 from imgurpython import ImgurClient
-client = ImgurClient(client_id, client_secret)
+openAppKey = open("appkey","r")
+appKey = json.loads(file.read(openAppKey))
+
+client = ImgurClient(appKey['client_id'], appKey['client_secret'])
 
 #Import the UI interface
 import gui
