@@ -12,9 +12,10 @@ import webbrowser
 #Import json to encoding the string to json file
 import json
 #Import PlurkOauth to get token
-from PlurkOauth import getAccessToken
+from PlurkOauth import getRequestToken,getAccessToken
 openPlurkClient = open("plurkClient","r")
 plurkClient = json.loads(file.read(openPlurkClient))
+requestToken,requestTokenSecret = getRequestToken(plurkClient['app_key'],plurkClient['app_secret'])
 
 #Import imgurpython to upload the image
 from imgurpython import ImgurClient
@@ -105,10 +106,12 @@ class PlurkPinFrame(gui.PlurkPinFrame):
         gui.PlurkPinFrame.__init__(self, parent)
 
     def getPinFromWebSite(self, event):
-        getAccessToken(plurkClient['app_key'],plurkClient['app_secret'])
+        auth_url = 'http://www.plurk.com/OAuth/authorize?oauth_token=' + requestToken
+        webbrowser.open(auth_url)
 
     def sendPin(self, event):
         pin = self.inputPin.GetValue()
+        accessToken,accessTokenSecret = getAccessToken(plurkClient['app_key'],plurkClient['app_secret'],requestToken,requestTokenSecret,pin)
 
 #Show Main Frame
 app = wx.App(False)
