@@ -3,6 +3,8 @@
 
 #Import wx for create GUI interface
 import wx 
+#Import sys for contorl the program
+import sys
 #Import os for using system command
 import os
 #Import datatime to get current time
@@ -16,7 +18,7 @@ from PlurkOAuth import getRequestToken,getAccessToken,addPlurk
 openPlurkClient = open("plurkClient","r")
 plurkClient = json.loads(file.read(openPlurkClient))
 
-if not os.path.exists('plurkToken'):
+if not os.path.exists('./plurkToken'):
     requestToken,requestTokenSecret = getRequestToken(plurkClient['app_key'],plurkClient['app_secret'])
 
 #Import imgurpython to upload the image
@@ -31,7 +33,7 @@ import gui
 #Capture screen function
 current = datetime.datetime.now()
 
-filename = "Plurk" + current.strftime("%Y-%m-%d") +".png"
+filename = "./Plurk" + current.strftime("%Y-%m-%d") +".png"
 
 catureCmd1 = "screencapture " + filename
 
@@ -46,12 +48,12 @@ class mainFrame(gui.mainFrame):
         self.Show(False)
         os.system(catureCmd1)
 
-        if os.path.exists('imgurToken'):
-            openToken = open("imgurToken","r")
+        if os.path.exists('./imgurToken'):
+            openToken = open("./imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
 
-            if os.path.exists('plurkToken'):
+            if os.path.exists('./plurkToken'):
                PlurkFrame(None).Show(True)
 
             else:
@@ -65,13 +67,13 @@ class mainFrame(gui.mainFrame):
         self.Show(False)
     	os.system(catureCmd2)
 
-        if os.path.exists('imgurToken'):
-            openToken = open("imgurToken","r")
+        if os.path.exists('./imgurToken'):
+            openToken = open("./imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
 
-            if os.path.exists('plurkToken'):
-                openToken = open("plurkToken","r")
+            if os.path.exists('./plurkToken'):
+                openToken = open("./plurkToken","r")
                 token = json.loads(file.read(openToken))
                 PlurkFrame(None).Show(True)
 
@@ -88,6 +90,9 @@ class pinFrame(gui.pinFrame):
     def __init__(self, parent):
         gui.pinFrame.__init__(self, parent)
 
+    def closeApp(self, event):
+        sys.exit()
+
     def getPinFromWebSite(self, event):
         auth_url = client.get_auth_url('pin')
         webbrowser.open(auth_url)
@@ -98,12 +103,12 @@ class pinFrame(gui.pinFrame):
         client.set_user_auth(credentials['access_token'], credentials['refresh_token'])
 
 #Save token to file
-        saveToken = file('imgurToken', 'w')
+        saveToken = file('./imgurToken', 'w')
         token = {"access_token":credentials['access_token'],"refresh_token":credentials['refresh_token']}
 
         saveToken.write(json.dumps(token))
 
-        self.Show(False)
+        self.Destroy()
         
         PlurkPinFrame(None).Show(True)
 
@@ -118,6 +123,9 @@ class PlurkPinFrame(gui.PlurkPinFrame):
     def __init__(self, parent):
         gui.PlurkPinFrame.__init__(self, parent)
 
+    def closeApp(self, event):
+        sys.exit()
+
     def getPinFromWebSite(self, event):
         auth_url = 'http://www.plurk.com/OAuth/authorize?oauth_token=' + requestToken
         webbrowser.open(auth_url)
@@ -126,6 +134,7 @@ class PlurkPinFrame(gui.PlurkPinFrame):
         pin = self.inputPin.GetValue()
         accessToken,accessTokenSecret = getAccessToken(plurkClient['app_key'],plurkClient['app_secret'],requestToken,requestTokenSecret,pin)
         PlurkFrame(None).Show(True)
+        self.Destroy()
 
 class PlurkFrame(gui.PlurkFrame):
     
@@ -133,6 +142,9 @@ class PlurkFrame(gui.PlurkFrame):
         gui.PlurkFrame.__init__(self, parent)
         imagelink = uploadImage()
         self.plurk_content.SetValue(imagelink)
+
+    def closeApp(self, event):
+        sys.exit()
 
     def plurk(self, event):
         openToken = open("plurkToken","r")
@@ -145,8 +157,10 @@ class PlurkFrame(gui.PlurkFrame):
 
         content = self.plurk_content.GetValue()
 
-        addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content)
+        statusCode = addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content)
 
+        if statusCode == 200:
+            sys.exit()
 
 #Show Main Frame
 app = wx.App(False)

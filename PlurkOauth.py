@@ -73,7 +73,7 @@ def getAccessToken(appKey,appSecret,requestToken,requestTokenSecret,pin):
 
 	accessTokenSecret = accessTokenQs['oauth_token_secret'][0]
 
-	saveToken = file('plurkToken', 'w')
+	saveToken = file('./plurkToken', 'w')
 
 	token = {"access_token":accessToken,"access_token_secret":accessTokenSecret}
 
@@ -106,3 +106,5 @@ def addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content):
 	req.sign_request(signature_method, consumer,token)
 
 	postPlurk = requests.get(url,params = req)
+
+	return postPlurk.status_code
