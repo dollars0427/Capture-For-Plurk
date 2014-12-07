@@ -163,6 +163,12 @@ class PlurkFrame(gui.PlurkFrame):
             sys.exit()
 
 #Show Main Frame
-app = wx.App(False)
-mainFrame(None).Show(True)
+class EventTriggerMain(wx.App):
+
+    def OnInit(self):
+        self.m_frame = mainFrame(None)
+        self.m_frame.Show()
+        return True
+
+app = EventTriggerMain()
 app.MainLoop()
