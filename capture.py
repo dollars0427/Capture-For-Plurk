@@ -48,7 +48,14 @@ class mainFrame(gui.mainFrame):
             openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
-            uploadImage()
+
+            if os.path.exists('plurkToken'):
+               openToken = open("plurkToken","r")
+               token = json.loads(file.read(openToken))
+               plurkFrame(None).Show(True)
+
+            else:
+                PlurkPinFrame(None).Show(True)
 
         else:
             self.Show(False)
@@ -62,7 +69,14 @@ class mainFrame(gui.mainFrame):
             openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
-            uploadImage()
+
+            if os.path.exists('plurkToken'):
+                openToken = open("plurkToken","r")
+                token = json.loads(file.read(openToken))
+                PlurkFrame(None).Show(True)
+
+            else:
+                PlurkPinFrame(None).Show(True)
 
         else:
             self.Show(False)
@@ -88,8 +102,6 @@ class pinFrame(gui.pinFrame):
         token = {"access_token":credentials['access_token'],"refresh_token":credentials['refresh_token']}
 
         saveToken.write(json.dumps(token))
-        
-        uploadImage()
 
         self.Show(False)
         
@@ -98,6 +110,7 @@ class pinFrame(gui.pinFrame):
 def uploadImage():
     uploaded_image = client.upload_from_path(filename, config=None, anon=False)
     imagelink = uploaded_image['link']
+    return imagelink
 
 #If user do not have a access token for plurk, ask pin and get token
 class PlurkPinFrame(gui.PlurkPinFrame):
@@ -112,6 +125,13 @@ class PlurkPinFrame(gui.PlurkPinFrame):
     def sendPin(self, event):
         pin = self.inputPin.GetValue()
         accessToken,accessTokenSecret = getAccessToken(plurkClient['app_key'],plurkClient['app_secret'],requestToken,requestTokenSecret,pin)
+        PlurkFrame(None).Show(True)
+
+class PlurkFrame(gui.PlurkFrame):
+ 
+    def __init__(self, parent):
+        gui.PlurkFrame.__init__(self, parent)
+
 
 #Show Main Frame
 app = wx.App(False)

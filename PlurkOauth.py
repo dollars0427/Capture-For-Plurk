@@ -11,6 +11,8 @@ import time
 import requests
 #Import urlparse to parse the response
 import urlparse 
+#Import json to encoding the string to json file
+import json
 
 def getRequestToken(appKey,appSecret):
 	url = 'http://www.plurk.com/OAuth/request_token'
@@ -65,16 +67,16 @@ def getAccessToken(appKey,appSecret,requestToken,requestTokenSecret,pin):
 
 	getAccessToken = requests.get(url,params = req)
 
-	accessTokenQs = urlparse.parse_qs(getrequestToken.text)
+	accessTokenQs = urlparse.parse_qs(getAccessToken.text)
 
 	accessToken = accessTokenQs['oauth_token'][0]
 
 	accessTokenSecret = accessTokenQs['oauth_token_secret'][0]
 
 	saveToken = file('plurkToken', 'w')
-    
-    token = {"access_token":accessToken,"accessTokenSecret":accessTokenSecret}
 
-    saveToken.write(json.dumps(token))
+	token = {"access_token":accessToken,"access_token_secret":accessTokenSecret}
+
+	saveToken.write(json.dumps(token))
 
 	return accessToken,accessTokenSecret
