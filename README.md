@@ -7,7 +7,7 @@ Capture for plurk
 
 系統需求：Mac OSX 1.7.x Lion或以上
 
-下載地址：zuikaku.me/File/Upload/Capture_Release.zip
+下載地址：http://zuikaku.me/File/Upload/Capture_Release.zip
 
 如有任何疑問，可以到噗浪或Twitter尋找作者：
 
