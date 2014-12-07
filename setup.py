@@ -17,6 +17,8 @@ OPTIONS = {'argv_emulation': True,
 setup(
     app=APP,
     name='Capture',
+    version='1.0',
+    author='Mr.Twister',
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app','wxpython','imgurpython']
