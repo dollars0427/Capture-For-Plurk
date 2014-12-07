@@ -80,3 +80,29 @@ def getAccessToken(appKey,appSecret,requestToken,requestTokenSecret,pin):
 	saveToken.write(json.dumps(token))
 
 	return accessToken,accessTokenSecret
+
+def addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content):
+	url = 'http://www.plurk.com/APP/Timeline/plurkAdd'
+
+	params = {
+    	'oauth_version': "1.0",
+    	'oauth_nonce': oauth.generate_nonce(),
+    	'oauth_timestamp': int(time.time())
+	}
+
+	consumer = oauth.Consumer(key= appKey, secret= appSecret)
+	token = oauth.Token(key=accessToken, secret=accessTokenSecret)
+
+	params['oauth_consumer_key'] = consumer.key
+	params['oauth_token'] = token.key
+	params['content'] = content.encode('utf-8')
+	params['qualifier'] = 'says'
+	params['no_comments'] = 0
+
+	req = oauth.Request(method="GET", url=url, parameters=params)
+
+	signature_method = oauth.SignatureMethod_HMAC_SHA1()
+
+	req.sign_request(signature_method, consumer,token)
+
+	postPlurk = requests.get(url,params = req)

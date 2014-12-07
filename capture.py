@@ -11,11 +11,13 @@ import datetime
 import webbrowser
 #Import json to encoding the string to json file
 import json
-#Import PlurkOauth to get token
-from PlurkOauth import getRequestToken,getAccessToken
+#Import PlurkOAuth to plurk
+from PlurkOAuth import getRequestToken,getAccessToken,addPlurk
 openPlurkClient = open("plurkClient","r")
 plurkClient = json.loads(file.read(openPlurkClient))
-requestToken,requestTokenSecret = getRequestToken(plurkClient['app_key'],plurkClient['app_secret'])
+
+if not os.path.exists('plurkToken'):
+    requestToken,requestTokenSecret = getRequestToken(plurkClient['app_key'],plurkClient['app_secret'])
 
 #Import imgurpython to upload the image
 from imgurpython import ImgurClient
@@ -41,18 +43,16 @@ class mainFrame(gui.mainFrame):
         gui.mainFrame.__init__(self, parent)
  
     def catureFullScreen(self, event):
+        self.Show(False)
         os.system(catureCmd1)
 
         if os.path.exists('imgurToken'):
-            self.Show(False)
             openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
 
             if os.path.exists('plurkToken'):
-               openToken = open("plurkToken","r")
-               token = json.loads(file.read(openToken))
-               plurkFrame(None).Show(True)
+               PlurkFrame(None).Show(True)
 
             else:
                 PlurkPinFrame(None).Show(True)
@@ -62,10 +62,10 @@ class mainFrame(gui.mainFrame):
             pinFrame(None).Show(True)
 
     def caturePart(self, event):
+        self.Show(False)
     	os.system(catureCmd2)
 
         if os.path.exists('imgurToken'):
-            self.Show(False)
             openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
@@ -128,9 +128,24 @@ class PlurkPinFrame(gui.PlurkPinFrame):
         PlurkFrame(None).Show(True)
 
 class PlurkFrame(gui.PlurkFrame):
- 
+    
     def __init__(self, parent):
         gui.PlurkFrame.__init__(self, parent)
+        imagelink = uploadImage()
+        self.plurk_content.SetValue(imagelink)
+
+    def plurk(self, event):
+        openToken = open("plurkToken","r")
+        token = json.loads(file.read(openToken))
+
+        appKey = plurkClient['app_key']
+        appSecret = plurkClient['app_secret']
+        accessToken = token['access_token']
+        accessTokenSecret = token['access_token_secret']
+
+        content = self.plurk_content.GetValue()
+
+        addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content)
 
 
 #Show Main Frame
