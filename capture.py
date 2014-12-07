@@ -11,13 +11,16 @@ import datetime
 import webbrowser
 #Import json to encoding the string to json file
 import json
+#Import PlurkOauth to get token
+from PlurkOauth import getAccessToken
+openPlurkClient = open("plurkClient","r")
+plurkClient = json.loads(file.read(openPlurkClient))
 
 #Import imgurpython to upload the image
 from imgurpython import ImgurClient
-openAppKey = open("appkey","r")
-appKey = json.loads(file.read(openAppKey))
-
-client = ImgurClient(appKey['client_id'], appKey['client_secret'])
+openimgurAppKey = open("imgurAppKey","r")
+imgurAppkey = json.loads(file.read(openimgurAppKey))
+client = ImgurClient(imgurAppkey['client_id'], imgurAppkey['client_secret'])
 
 #Import the UI interface
 import gui
@@ -39,9 +42,9 @@ class mainFrame(gui.mainFrame):
     def catureFullScreen(self, event):
         os.system(catureCmd1)
 
-        if os.path.exists('token.saved'):
+        if os.path.exists('imgurToken'):
             self.Show(False)
-            openToken = open("token.saved","r")
+            openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
             uploadImage()
@@ -53,9 +56,9 @@ class mainFrame(gui.mainFrame):
     def caturePart(self, event):
     	os.system(catureCmd2)
 
-        if os.path.exists('token.saved'):
+        if os.path.exists('imgurToken'):
             self.Show(False)
-            openToken = open("token.saved","r")
+            openToken = open("imgurToken","r")
             token = json.loads(file.read(openToken))
             client.set_user_auth(token['access_token'], token['refresh_token'])
             uploadImage()
@@ -80,17 +83,32 @@ class pinFrame(gui.pinFrame):
         client.set_user_auth(credentials['access_token'], credentials['refresh_token'])
 
 #Save token to file
-        saveToken = file('token.saved', 'w')
+        saveToken = file('imgurToken', 'w')
         token = {"access_token":credentials['access_token'],"refresh_token":credentials['refresh_token']}
 
         saveToken.write(json.dumps(token))
         
         uploadImage()
 
+        self.Show(False)
+        
+        PlurkPinFrame(None).Show(True)
+
 def uploadImage():
     uploaded_image = client.upload_from_path(filename, config=None, anon=False)
     imagelink = uploaded_image['link']
-    print imagelink
+
+#If user do not have a access token for plurk, ask pin and get token
+class PlurkPinFrame(gui.PlurkPinFrame):
+ 
+    def __init__(self, parent):
+        gui.PlurkPinFrame.__init__(self, parent)
+
+    def getPinFromWebSite(self, event):
+        getAccessToken(plurkClient['app_key'],plurkClient['app_secret'])
+
+    def sendPin(self, event):
+        pin = self.inputPin.GetValue()
 
 #Show Main Frame
 app = wx.App(False)
