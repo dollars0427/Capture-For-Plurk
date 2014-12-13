@@ -33,7 +33,7 @@ import gui
 #Capture screen function
 current = datetime.datetime.now()
 
-filename = "./Plurk" + current.strftime("%Y-%m-%d") +".png"
+filename = "Plurk" + current.strftime("%Y-%m-%d-%H-%M-%S") +".png"
 
 catureCmd1 = "screencapture " + filename
 
@@ -66,6 +66,10 @@ class mainFrame(gui.mainFrame):
     def caturePart(self, event):
         self.Show(False)
     	os.system(catureCmd2)
+
+        if os.path.exists(filename) == False:
+            self.Show(True)
+            return
 
         if os.path.exists('./imgurToken'):
             openToken = open("./imgurToken","r")
@@ -163,12 +167,6 @@ class PlurkFrame(gui.PlurkFrame):
             sys.exit()
 
 #Show Main Frame
-class EventTriggerMain(wx.App):
-
-    def OnInit(self):
-        self.m_frame = mainFrame(None)
-        self.m_frame.Show()
-        return True
-
-app = EventTriggerMain()
+app = wx.App(False)
+mainFrame(None).Show(True)
 app.MainLoop()
