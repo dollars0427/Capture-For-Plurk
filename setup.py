@@ -9,7 +9,7 @@ from setuptools import setup
 
 APP = ['capture.py']
 DATA_FILES = ['gui.py','imgurAppKey','plurkClient','PlurkOAuth.py','logo.png']
-OPTIONS = {'argv_emulation': True,
+OPTIONS = {'argv_emulation': False,
 		   'includes': ['requests','imgurpython','wx'],
 		   'packages': ['requests','imgurpython','wx'],
 		   'iconfile':'icon.icns'}
