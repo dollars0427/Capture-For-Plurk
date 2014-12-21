@@ -107,4 +107,36 @@ def addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content):
 
 	postPlurk = requests.get(url,params = req)
 
-	return postPlurk.status_code
+	getJson = postPlurk.json()
+
+	plurkId = getJson['plurk_id']
+
+	return postPlurk.status_code,plurkId
+
+def addResponse(appKey,appSecret,accessToken,accessTokenSecret,plurkId,content):
+	url = 'http://www.plurk.com/APP/Responses/responseAdd'
+
+	params = {
+    	'oauth_version': "1.0",
+    	'oauth_nonce': oauth.generate_nonce(),
+    	'oauth_timestamp': int(time.time())
+	}
+
+	consumer = oauth.Consumer(key= appKey, secret= appSecret)
+	token = oauth.Token(key=accessToken, secret=accessTokenSecret)
+
+	params['oauth_consumer_key'] = consumer.key
+	params['oauth_token'] = token.key
+	params['plurk_id'] = plurkId
+	params['content'] = content.encode('utf-8')
+	params['qualifier'] = 'says'
+
+	req = oauth.Request(method="GET", url=url, parameters=params)
+
+	signature_method = oauth.SignatureMethod_HMAC_SHA1()
+
+	req.sign_request(signature_method, consumer,token)
+
+	responsePlurk = requests.get(url,params = req)
+
+	return responsePlurk.status_code

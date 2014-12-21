@@ -14,7 +14,7 @@ import webbrowser
 #Import json to encoding the string to json file
 import json
 #Import PlurkOAuth to plurk
-from PlurkOAuth import getRequestToken,getAccessToken,addPlurk
+from PlurkOAuth import getRequestToken,getAccessToken,addPlurk,addResponse
 openPlurkClient = open("plurkClient","r")
 plurkClient = json.loads(file.read(openPlurkClient))
 
@@ -161,11 +161,76 @@ class PlurkFrame(gui.PlurkFrame):
 
         content = self.plurk_content.GetValue()
 
-        statusCode = addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content)
+        statusCode,plurkId = addPlurk(appKey,appSecret,accessToken,accessTokenSecret,content)
 
         if statusCode == 200:
-            sys.exit()
+            global plurkId
+            selectFrame(None).Show(True)
+            self.Destroy()
 
+class selectFrame(gui.selectFrame):
+    
+    def __init__(self, parent):
+        gui.selectFrame.__init__(self, parent)
+
+    def closeApp(self, event):
+        sys.exit()
+
+    def catureFullScreen(self, event):
+        self.Destroy()
+        os.system(catureCmd1)
+        responsesFrame(None).Show(True)
+
+    def caturePart(self, event):
+        self.Destroy()
+        os.system(catureCmd2)
+        responsesFrame(None).Show(True)
+
+class selectFrame2(gui.selectFrame2):
+    
+    def __init__(self, parent):
+        gui.selectFrame2.__init__(self, parent)
+
+    def closeApp(self, event):
+        sys.exit()
+
+    def catureFullScreen(self, event):
+        self.Destroy()
+        os.system(catureCmd1)
+        responsesFrame(None).Show(True)
+
+    def caturePart(self, event):
+        self.Destroy()
+        os.system(catureCmd2)
+        responsesFrame(None).Show(True)
+
+class responsesFrame(gui.responsesFrame):
+    
+    def __init__(self, parent):
+        gui.responsesFrame.__init__(self, parent)
+        imagelink = uploadImage()
+        self.plurk_content.SetValue(imagelink)
+
+    def closeApp(self, event):
+        sys.exit()
+
+    def response(self, event):
+        openToken = open("plurkToken","r")
+        token = json.loads(file.read(openToken))
+
+        appKey = plurkClient['app_key']
+        appSecret = plurkClient['app_secret']
+        accessToken = token['access_token']
+        accessTokenSecret = token['access_token_secret']
+
+        content = self.plurk_content.GetValue()
+        
+        statusCode = addResponse(appKey,appSecret,accessToken,accessTokenSecret,plurkId,content)
+        
+        if statusCode == 200:
+            selectFrame2(None).Show(True)
+            self.Destroy()
+            
 #Show Main Frame
 app = wx.App(False)
 mainFrame(None).Show(True)
